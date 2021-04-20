@@ -1,2 +1,2 @@
 # kafkajet
-simple kaka topic viewe
+simple kaka topic viewer

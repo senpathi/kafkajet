@@ -1,0 +1,6 @@
+package param_extracor
+
+type ErrorUnSupportedParamType error
+type ErrorUnmarshalType error
+type ErrorNotAssignable error
+type ErrorUnSupportedType error

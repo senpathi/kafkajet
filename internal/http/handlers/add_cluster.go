@@ -9,6 +9,7 @@ func (a AddClusterHandler) ServeHTTP(writer http.ResponseWriter, request *http.R
 	panic("implement me")
 }
 
-func (a AddClusterHandler) run(writer http.ResponseWriter, request *http.Request) {
+func (a AddClusterHandler) run(writer http.ResponseWriter, request *http.Request) error {
 
+	return nil
 }

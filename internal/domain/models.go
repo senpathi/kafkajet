@@ -12,3 +12,9 @@ type Sort struct {
 	Field string `json:"field"`
 	Order int64  `json:"order"`
 }
+
+type TopicDetails struct {
+	Name              string `json:"name"`
+	NumPartitions     int32  `json:"num_partitions"`
+	ReplicationFactor int16  `json:"replication_factor"`
+}

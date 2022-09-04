@@ -1,12 +1,20 @@
 package kafka
 
 import (
-	"github.com/Shopify/sarama"
 	"log"
+
+	"github.com/Shopify/sarama"
+
+	"github.com/senpathi/kafkajet/internal/domain"
 )
 
+type client struct {
+	conf *sarama.Config
+}
+
 type Client interface {
-	sarama.Client
+	Topics() ([]string, error)
+	CreateTopics(details []domain.TopicDetails) ([]string, error)
 }
 
 func NewClient() Client {
@@ -16,10 +24,51 @@ func NewClient() Client {
 	conf.Producer.Return.Successes = true          // this must be true for sync producer
 	conf.Producer.RequiredAcks = sarama.WaitForAll // wait for all makes sure the reliability of the produced message
 
-	cli, err := sarama.NewClient([]string{"localhost:9092"}, conf)
+	return &client{
+		conf: conf,
+	}
+}
+
+func (c *client) Topics() ([]string, error) {
+	cli, err := sarama.NewClient([]string{"kafka:9092"}, c.conf)
 	if err != nil {
 		log.Fatalln(err)
 	}
+	defer cli.Close()
 
-	return cli
+	return cli.Topics()
+}
+
+func (c *client) CreateTopics(details []domain.TopicDetails) ([]string, error) {
+	cli, err := sarama.NewClient([]string{"kafka:9092"}, c.conf)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer cli.Close()
+
+	ctrl, err := cli.Controller()
+	if err != nil {
+		return nil, err
+	}
+
+	topics := make([]string, 0, len(details))
+
+	topicDetails := make(map[string]*sarama.TopicDetail)
+	for _, detail := range details {
+		topicDetails[detail.Name] = &sarama.TopicDetail{
+			NumPartitions:     detail.NumPartitions,
+			ReplicationFactor: detail.ReplicationFactor,
+		}
+
+		topics = append(topics, detail.Name)
+	}
+
+	_, err = ctrl.CreateTopics(&sarama.CreateTopicsRequest{
+		TopicDetails: topicDetails,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return topics, err
 }

@@ -2,6 +2,7 @@ package response
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/senpathi/kafkajet/internal/domain"
@@ -57,8 +58,12 @@ func unwrapError(err error) (domain.Error, int) {
 			Message: "internal server error",
 		}
 
+		fmt.Println(err)
+
 		return dmErr, http.StatusInternalServerError
 	}
+
+	fmt.Println(dmErr)
 
 	// todo: decide response status code base on the error code
 	return dmErr, http.StatusBadRequest

@@ -35,6 +35,14 @@ func (r *Router) Init(cli kafka.Client) {
 			Client: cli,
 		},
 	).Methods(http.MethodGet)
+
+	// create topics
+	muxRouter.Handle(
+		"/topics",
+		&handlers.CreateTopicsHandler{
+			Client: cli,
+		},
+	).Methods(http.MethodPost)
 }
 
 func (r Router) Start() {

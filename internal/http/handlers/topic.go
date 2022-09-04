@@ -1,19 +1,18 @@
 package handlers
 
 import (
-	"github.com/senpathi/kafkajet/internal/http/response"
 	"net/http"
+
+	"github.com/senpathi/kafkajet/internal/http/response"
+	"github.com/senpathi/kafkajet/internal/kafka"
 )
 
 type ViewTopicsHandler struct {
+	Client kafka.Client
 }
 
 func (v *ViewTopicsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	testTopics := []string{
-		"topic1",
-		"topic2",
-		"topic3",
-	}
+	topics, err := v.Client.Topics()
 
-	response.MakeJson(w, response.ViewTopics{Topics: testTopics}, nil)
+	response.MakeJson(w, response.ViewTopics{Topics: topics}, err)
 }

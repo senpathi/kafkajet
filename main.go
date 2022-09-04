@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/senpathi/kafkajet/internal/kafka"
 	"os"
 	"os/signal"
 
@@ -8,10 +9,13 @@ import (
 )
 
 func main() {
+	/******************-Init Kafka Client-*************************************/
+	kClient := kafka.NewClient()
+
 	/******************-Init Http Handlers-*************************************/
 	router := &http.Router{}
 
-	router.Init()
+	router.Init(kClient)
 
 	/******-Handle OS interrupt Signals-*****/
 	sig := make(chan os.Signal, 1)

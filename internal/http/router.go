@@ -11,13 +11,15 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/senpathi/kafkajet/internal/http/handlers"
+	"github.com/senpathi/kafkajet/internal/kafka"
 )
 
 type Router struct {
 	server *http.Server
+	client kafka.Client
 }
 
-func (r *Router) Init() {
+func (r *Router) Init(cli kafka.Client) {
 	muxRouter := mux.NewRouter()
 	r.server = &http.Server{
 		Addr: fmt.Sprintf(":%s", "8080"),
@@ -29,7 +31,9 @@ func (r *Router) Init() {
 	// view all topics
 	muxRouter.Handle(
 		"/topics",
-		&handlers.ViewTopicsHandler{},
+		&handlers.ViewTopicsHandler{
+			Client: cli,
+		},
 	).Methods(http.MethodGet)
 }
 

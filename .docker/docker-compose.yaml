@@ -9,6 +9,7 @@ services:
       - "zookeeper_data:/bitnami"
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
+
   kafka:
     image: docker.io/bitnami/kafka:3.2
     ports:
@@ -19,6 +20,17 @@ services:
       - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
       - ALLOW_PLAINTEXT_LISTENER=yes
     depends_on:
+      - zookeeper
+
+  kafkajet:
+    restart: always
+    build:
+      context: ..
+      dockerfile: .docker/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - kafka
       - zookeeper
 
 volumes:

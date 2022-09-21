@@ -18,3 +18,8 @@ type TopicDetails struct {
 	NumPartitions     int32  `json:"num_partitions"`
 	ReplicationFactor int16  `json:"replication_factor"`
 }
+
+type Cluster struct {
+	Name    string   `json:"name" validate:"required" bson:"name"`
+	Brokers []string `json:"brokers" validate:"required,min=1" bson:"brokers"`
+}

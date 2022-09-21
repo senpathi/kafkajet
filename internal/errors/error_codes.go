@@ -1,5 +1,6 @@
 package errors
 
 const (
-	InvalidRequestErrorCode = "4000"
+	InvalidRequestErrorCode   = "4000"
+	InvalidValueTypeErrorCode = "4001"
 )

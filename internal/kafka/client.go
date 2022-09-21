@@ -1,6 +1,8 @@
 package kafka
 
 import (
+	"errors"
+	"fmt"
 	"log"
 
 	"github.com/Shopify/sarama"
@@ -63,11 +65,20 @@ func (c *client) CreateTopics(details []domain.TopicDetails) ([]string, error) {
 		topics = append(topics, detail.Name)
 	}
 
-	_, err = ctrl.CreateTopics(&sarama.CreateTopicsRequest{
+	res, err := ctrl.CreateTopics(&sarama.CreateTopicsRequest{
 		TopicDetails: topicDetails,
 	})
 	if err != nil {
 		return nil, err
+	}
+
+	for k, v := range res.TopicErrors {
+		msg := fmt.Sprintf("%s. topic: [%s]", v.Error(), k)
+		return nil, domain.Error{
+			Err:     errors.New(msg),
+			Code:    "4000",
+			Message: msg,
+		}
 	}
 
 	return topics, err

@@ -1,4 +1,4 @@
-package domain
+package errors
 
 type Error struct {
 	Err     error  `json:"-"`

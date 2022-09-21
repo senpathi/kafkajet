@@ -6,11 +6,12 @@ import (
 	"net/http"
 
 	"github.com/senpathi/kafkajet/internal/domain"
+	domainErr "github.com/senpathi/kafkajet/internal/errors"
 )
 
 type GenericResponse struct {
 	Payload  any              `json:"payload"`
-	Error    *domain.Error    `json:"error"`
+	Error    *domainErr.Error `json:"error"`
 	Metadata *domain.Metadata `json:"metadata"`
 }
 
@@ -18,7 +19,7 @@ func MakeJson(w http.ResponseWriter, payload any, err error) {
 	res := GenericResponse{}
 	code := http.StatusOK
 	if err != nil {
-		var dmErr domain.Error
+		var dmErr domainErr.Error
 		dmErr, code = unwrapError(err)
 		res.Error = &dmErr
 	} else {
@@ -36,7 +37,7 @@ func MakeJsonWithMeta(w http.ResponseWriter, payload any, err error, meta domain
 
 	code := http.StatusOK
 	if err != nil {
-		var dmErr domain.Error
+		var dmErr domainErr.Error
 		dmErr, code = unwrapError(err)
 		res.Error = &dmErr
 	} else {
@@ -50,10 +51,10 @@ func MakeJsonWithMeta(w http.ResponseWriter, payload any, err error, meta domain
 	json.NewEncoder(w).Encode(res)
 }
 
-func unwrapError(err error) (domain.Error, int) {
-	dmErr, ok := err.(domain.Error)
+func unwrapError(err error) (domainErr.Error, int) {
+	dmErr, ok := err.(domainErr.Error)
 	if !ok {
-		dmErr = domain.Error{
+		dmErr = domainErr.Error{
 			Code:    "5000",
 			Message: "internal server error",
 		}

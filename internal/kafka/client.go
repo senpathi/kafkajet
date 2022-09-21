@@ -8,6 +8,7 @@ import (
 	"github.com/Shopify/sarama"
 
 	"github.com/senpathi/kafkajet/internal/domain"
+	domainErr "github.com/senpathi/kafkajet/internal/errors"
 )
 
 type client struct {
@@ -74,9 +75,9 @@ func (c *client) CreateTopics(details []domain.TopicDetails) ([]string, error) {
 
 	for k, v := range res.TopicErrors {
 		msg := fmt.Sprintf("%s. topic: [%s]", v.Error(), k)
-		return nil, domain.Error{
+		return nil, domainErr.Error{
 			Err:     errors.New(msg),
-			Code:    "4000",
+			Code:    domainErr.InvalidRequestErrorCode,
 			Message: msg,
 		}
 	}

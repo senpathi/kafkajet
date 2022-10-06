@@ -4,6 +4,7 @@ go 1.18
 
 require (
 	github.com/Shopify/sarama v1.36.0
+	github.com/caarlos0/env/v6 v6.10.1
 	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
 	github.com/stretchr/testify v1.8.0

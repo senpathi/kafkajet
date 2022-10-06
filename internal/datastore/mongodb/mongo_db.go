@@ -3,15 +3,14 @@ package mongodb
 import (
 	"context"
 	"fmt"
+	repository2 "github.com/senpathi/kafkajet/internal/datastore/repository"
 	"log"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-
-	"github.com/senpathi/kafkajet/internal/repository"
 )
 
-func Init(conf repository.DBConfig) (repository.DB, error) {
+func Init(conf repository2.DBConfig) (repository2.DB, error) {
 	uri := fmt.Sprintf(
 		"mongodb://%s:%s@%s/?maxPoolSize=%d", conf.User, conf.Password, conf.Address, conf.MaxConnection)
 
@@ -38,7 +37,7 @@ type mongoDB struct {
 	database string
 }
 
-func (m *mongoDB) Table(name string) repository.Repo {
+func (m *mongoDB) Table(name string) repository2.Repo {
 	return &table{
 		collection: m.client.Database(m.database).Collection(name),
 	}

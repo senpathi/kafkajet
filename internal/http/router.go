@@ -3,6 +3,7 @@ package http
 import (
 	"context"
 	"fmt"
+	"github.com/senpathi/kafkajet/internal/service"
 	"log"
 	"net/http"
 	"time"
@@ -19,7 +20,7 @@ type Router struct {
 	client kafka.Client
 }
 
-func (r *Router) Init(cli kafka.Client) {
+func (r *Router) Init(clusterService *service.ClusterService) {
 	muxRouter := mux.NewRouter()
 	r.server = &http.Server{
 		Addr: fmt.Sprintf(":%s", "8080"),
@@ -32,7 +33,7 @@ func (r *Router) Init(cli kafka.Client) {
 	muxRouter.Handle(
 		"/topics",
 		&handlers.ViewTopicsHandler{
-			Client: cli,
+			Service: clusterService,
 		},
 	).Methods(http.MethodGet)
 
@@ -40,7 +41,7 @@ func (r *Router) Init(cli kafka.Client) {
 	muxRouter.Handle(
 		"/topics",
 		&handlers.CreateTopicsHandler{
-			Client: cli,
+			Service: clusterService,
 		},
 	).Methods(http.MethodPost)
 }

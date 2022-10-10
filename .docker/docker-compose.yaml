@@ -1,4 +1,20 @@
 services:
+  mongodb:
+    image: mongo:5
+    restart: always
+    command: mongod
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    healthcheck:
+      test: echo 'db.runCommand({serverStatus:1}).ok' | mongo admin -u $MONGO_INITDB_ROOT_USERNAME -p $MONGO_INITDB_ROOT_PASSWORD --quiet | grep 1
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+
   zookeeper:
     image: docker.io/bitnami/zookeeper:3.8
     ports:
@@ -34,6 +50,8 @@ services:
       - "8080:8080"
     depends_on:
       kafka:
+        condition: service_healthy
+      mongodb:
         condition: service_healthy
 
 volumes:

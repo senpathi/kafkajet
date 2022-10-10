@@ -7,21 +7,21 @@ import (
 
 	"github.com/senpathi/kafkajet/internal/domain"
 	"github.com/senpathi/kafkajet/internal/http/response"
-	"github.com/senpathi/kafkajet/internal/kafka"
+	"github.com/senpathi/kafkajet/internal/service"
 )
 
 type ViewTopicsHandler struct {
-	Client kafka.Client
+	Service *service.ClusterService
 }
 
 func (v *ViewTopicsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	topics, err := v.Client.Topics()
+	topics, err := v.Service.ViewClusterTopics("localhost")
 
 	response.MakeJson(w, response.ViewTopics{Topics: topics}, err)
 }
 
 type CreateTopicsHandler struct {
-	Client kafka.Client
+	Service *service.ClusterService
 }
 
 func (c *CreateTopicsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -36,7 +36,7 @@ func (c *CreateTopicsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		response.MakeJson(w, nil, err)
 	}
 
-	topics, err := c.Client.CreateTopics(topicDetails)
+	topics, err := c.Service.CreateTopics("localhost", topicDetails)
 
 	response.MakeJson(w, response.ViewTopics{Topics: topics}, err)
 }

@@ -1,29 +1,30 @@
 package boot
 
 import (
+	"github.com/senpathi/kafkajet/internal/service"
 	"os"
 	"os/signal"
 
 	"github.com/senpathi/kafkajet/internal/datastore"
 	"github.com/senpathi/kafkajet/internal/datastore/repository"
 	"github.com/senpathi/kafkajet/internal/http"
-	"github.com/senpathi/kafkajet/internal/kafka"
 )
 
 func Boot() {
 	/******************-Load config-*************************************/
 	loadConfig()
 
-	/******************-Init Kafka Client-*************************************/
-	kClient := kafka.NewClient()
-
 	/******************-Init  Repository-*************************************/
+	datastore.Init()
 	clusterRepo := datastore.NewClusterRepository()
+
+	/******************-Init  Service Layer-*************************************/
+	kService := service.NewService(clusterRepo)
 
 	/******************-Init Http Handlers-*************************************/
 	router := &http.Router{}
 
-	router.Init(kClient)
+	router.Init(kService)
 
 	/******-Handle OS interrupt Signals-*****/
 	sig := make(chan os.Signal, 1)

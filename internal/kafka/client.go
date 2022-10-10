@@ -3,8 +3,6 @@ package kafka
 import (
 	"errors"
 	"fmt"
-	"log"
-
 	"github.com/Shopify/sarama"
 
 	"github.com/senpathi/kafkajet/internal/domain"
@@ -12,7 +10,8 @@ import (
 )
 
 type client struct {
-	conf *sarama.Config
+	conf           *sarama.Config
+	clusterDetails domain.Cluster
 }
 
 type Client interface {
@@ -20,7 +19,7 @@ type Client interface {
 	CreateTopics(details []domain.TopicDetails) ([]string, error)
 }
 
-func NewClient() Client {
+func NewClient(cluster domain.Cluster) Client {
 	conf := sarama.NewConfig()
 	conf.Version = sarama.V3_2_0_0
 	conf.Producer.Return.Errors = true             // this must be true for sync producer
@@ -28,14 +27,15 @@ func NewClient() Client {
 	conf.Producer.RequiredAcks = sarama.WaitForAll // wait for all makes sure the reliability of the produced message
 
 	return &client{
-		conf: conf,
+		conf:           conf,
+		clusterDetails: cluster,
 	}
 }
 
 func (c *client) Topics() ([]string, error) {
-	cli, err := sarama.NewClient([]string{"kafka:9092"}, c.conf)
+	cli, err := sarama.NewClient(c.clusterDetails.Brokers, c.conf)
 	if err != nil {
-		log.Fatalln(err)
+		return nil, err
 	}
 	defer cli.Close()
 
@@ -43,9 +43,9 @@ func (c *client) Topics() ([]string, error) {
 }
 
 func (c *client) CreateTopics(details []domain.TopicDetails) ([]string, error) {
-	cli, err := sarama.NewClient([]string{"kafka:9092"}, c.conf)
+	cli, err := sarama.NewClient(c.clusterDetails.Brokers, c.conf)
 	if err != nil {
-		log.Fatalln(err)
+		return nil, err
 	}
 	defer cli.Close()
 

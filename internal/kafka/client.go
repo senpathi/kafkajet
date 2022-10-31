@@ -3,6 +3,8 @@ package kafka
 import (
 	"errors"
 	"fmt"
+	"time"
+
 	"github.com/Shopify/sarama"
 
 	"github.com/senpathi/kafkajet/internal/domain"
@@ -68,12 +70,17 @@ func (c *client) CreateTopics(details []domain.TopicDetails) ([]string, error) {
 
 	res, err := ctrl.CreateTopics(&sarama.CreateTopicsRequest{
 		TopicDetails: topicDetails,
+		Timeout:      time.Second * 30,
 	})
 	if err != nil {
 		return nil, err
 	}
 
 	for k, v := range res.TopicErrors {
+		if errors.Is(v.Err, sarama.ErrNoError) {
+			continue
+		}
+
 		msg := fmt.Sprintf("%s. topic: [%s]", v.Error(), k)
 		return nil, domainErr.Error{
 			Err:     errors.New(msg),

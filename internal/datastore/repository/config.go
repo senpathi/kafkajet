@@ -11,7 +11,7 @@ type DBConfig struct {
 	Database      string `env:"DB_NAME" envDefault:"kafka_jet"`
 	User          string `env:"DB_USER" envDefault:"root"`
 	Password      string `env:"DB_PASSWORD" envDefault:"root"`
-	Address       string `env:"DB_URL" envDefault:"mongodb://mongodb:27017"`
+	Address       string `env:"DB_URL" envDefault:"localhost:27017"`
 	MaxConnection int    `env:"MAX_DB_CONNECTION" envDefault:"10"`
 }
 

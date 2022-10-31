@@ -6,14 +6,14 @@ services:
     ports:
       - "27017:27017"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: root
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=root
     healthcheck:
-      test: echo 'db.runCommand({serverStatus:1}).ok' | mongo admin -u $MONGO_INITDB_ROOT_USERNAME -p $MONGO_INITDB_ROOT_PASSWORD --quiet | grep 1
+      test: echo 'db.runCommand({serverStatus:1}).ok' | mongo admin -u root -p root --quiet | grep 1
       interval: 10s
       timeout: 10s
       retries: 5
-      start_period: 20s
+      start_period: 10s
 
   zookeeper:
     image: docker.io/bitnami/zookeeper:3.8
@@ -21,6 +21,12 @@ services:
       - "2181:2181"
     volumes:
       - "zookeeper_data:/bitnami"
+    healthcheck:
+      test: nc -z localhost 2181 || exit -1
+      interval: 10s
+      timeout: 30s
+      retries: 5
+      start_period: 10s
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
 
@@ -38,8 +44,10 @@ services:
       interval: 10s
       timeout: 30s
       retries: 5
+      start_period: 10s
     depends_on:
-      - zookeeper
+      zookeeper:
+        condition: service_healthy
 
   kafkajet:
     restart: always
@@ -53,6 +61,8 @@ services:
         condition: service_healthy
       mongodb:
         condition: service_healthy
+    environment:
+      - DB_URL=mongodb:27017
 
 volumes:
   zookeeper_data:
